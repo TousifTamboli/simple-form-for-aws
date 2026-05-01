@@ -11,7 +11,7 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await axios.post(`${BACKEND_URL}/api/users/add`, {
+    await axios.post(`/api/users/add`, {
       name,
       email
     });

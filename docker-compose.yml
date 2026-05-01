@@ -1,33 +1,35 @@
 version: "3"
 
 services:
-  mongo:
-    image: mongo
-    container_name: mongodb
-    ports:
-      - "27017:27017"
-    volumes: 
-      - mongo_data:/data/db
-
-  server:
+  backend:
     build: ./server
     container_name: backend
-    ports:
-      - "5001:5001"
-    depends_on:
-      - mongo
     env_file:
       - ./server/.env
+    restart: always
+    networks:
+      - app-network
 
-  client:
+  frontend:
     build: ./client
     container_name: frontend
-    ports:
-      - "5173:5173"
-    depends_on:
-      - server
-    env_file:
-      - ./client/.env
+    restart: always
+    networks:
+      - app-network
 
-volumes:
-  mongo_data:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - frontend
+      - backend
+    restart: always
+    networks:
+      - app-network
+
+networks:
+  app-network:
